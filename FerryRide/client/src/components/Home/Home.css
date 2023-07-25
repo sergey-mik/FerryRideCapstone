@@ -1,0 +1,20 @@
+#originSelect,
+#destinationSelect {
+  width: 50%;
+}
+
+label[for="originSelect"],
+label[for="destinationSelect"] {
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 10px;
+}
+
+.port {
+  width: 415px;
+  height: 215px;
+}
+
+.align-right {
+  text-align: right;
+}

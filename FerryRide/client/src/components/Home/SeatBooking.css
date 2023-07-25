@@ -1,0 +1,160 @@
+:root {
+  --seat-color: #757575;
+  --seat-color-selected: #176cff;
+  --seat-disabled: #cc6262;
+}
+
+.plane {
+  height: 90vh;
+  perspective: 900px;
+  margin: 20px;
+  /* margin-bottom: -50px; */
+}
+
+.cabin {
+  max-width: 600px;
+  min-width: 550px;
+  background-color: #ffffff;
+  width: 80vw;
+  margin: 25px auto;
+  transition: transform 1s ease;
+  transform: rotateX(60deg) translateZ(800px) translateY(-50px);
+  transform-style: preserve-3d;
+  transform-origin: center bottom;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.plane-top {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  width: 100%;
+  height: 150px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 0 0 50% 50%;
+  transform: translateX(-50%) rotate(180deg);
+}
+
+.plane-tail {
+  position: absolute;
+  bottom: -98px;
+  left: 50%;
+  width: 100%;
+  height: 100px;
+  background-color: rgba(255, 255, 255, 0.7);
+  /* border-radius: 50% 50% 0 0; */
+  transform: translateX(-50%) rotate(180deg);
+}
+
+.seat-row {
+  display: flex;
+  transform-style: preserve-3d;
+  transition: background-color 0.24s ease;
+}
+.seat-row:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.seat-row:hover .aisle-number {
+  background-color: #176cff;
+  transform: translateX(-50%) translateY(-50%) translateZ(3px);
+  box-shadow: 0px 3px 0 0 #0a39e6;
+}
+.seat {
+  width: 60px;
+  height: 60px;
+  margin: 12px;
+}
+
+.aisle {
+  flex: 1;
+  position: relative;
+}
+
+.aisle .aisle-number {
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 0 darken(var(--seat-color-selected), 30%);
+  background-color: var(--seat-color);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 30px;
+  color: #fff;
+  font-size: 16px;
+  transition: background-color 0.24s ease, transform 0.24s ease,
+    box-shadow 0.24s ease;
+}
+
+.seat-button.selected {
+  background-color: var(--seat-color-selected);
+}
+
+.seat-button.occupied {
+  background-color: var(--seat-disabled);
+}
+
+.seat-button {
+  background-color: #ccc;
+  border: none;
+  cursor: pointer;
+  width: 60px;
+  height: 60px;
+  transition: background-color 0.3s ease;
+}
+
+.seat-button:not(.selected):not(.occupied):hover {
+  background-color: #aaa;
+}
+
+/* -------------------------- */
+.legend,
+.total {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  /* margin-top: 30px; */
+  /* margin-bottom: 20px; */
+}
+
+.legend-item {
+  display: flex;
+  margin-right: 20px;
+}
+
+.legend-square {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.legend-square.selected {
+  background-color: #176cff;
+}
+
+.legend-square.occupied {
+  background-color: #cc6262;
+}
+
+.legend-square.empty {
+  background-color: #ccc;
+}
+
+.seat-booking-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* height: 100vh; */
+}
+
+.seat-booking-card {
+  /* text-align: center; */
+  width: 500px;
+  height: 500px;
+}
+
+
