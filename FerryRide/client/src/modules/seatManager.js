@@ -5,9 +5,9 @@ export const getToken = () => firebase.auth().currentUser.getIdToken()
 
 const apiUrl = '/api/SeatReservation'
 
-export const getAllSeatReservations = () => {
+export const getAllSeatReservations = (ferryScheduleId) => {
   return getToken().then((token) => {
-    return fetch(apiUrl, {
+    return fetch(`${apiUrl}?ferryScheduleId=${ferryScheduleId}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Card, CardBody, CardText, CardTitle, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row, } from 'reactstrap'
-import { addSeatReservation } from '../../modules/seatManager'
+import { addSeatReservation, getAllSeatReservations } from '../../modules/seatManager'
 import { addTicketPurchase } from '../../modules/ticketManager'
+
 import './SeatBooking.css'
 
-const SeatBooking = ({ goToHome, trip, departureDate, arrivalDate, origin, destination, ticketPurchase, }) => {
+const SeatBooking = ({ goToHome, trip, tripId, departureDate, arrivalDate, origin, destination, ticketPurchase, }) => {
   const rows = Array.from({ length: 12 }, (_, i) => i + 1)
   const [selectedSeats, setSelectedSeats] = useState([])
   const [occupiedSeats, setOccupiedSeats] = useState([])
@@ -12,9 +13,16 @@ const SeatBooking = ({ goToHome, trip, departureDate, arrivalDate, origin, desti
 
   const [modal, setModal] = useState(false)
 
- useEffect(() => {
-   setOccupiedSeats(['1-1', '2-2', '3-3', '4-4', '5-5'])
- }, [])
+useEffect(() => {
+  getAllSeatReservations(tripId).then((data) => {
+    const occupiedSeats = data.map(
+      (seatReservation) =>
+        `${seatReservation.seatRow}-${seatReservation.seatNumber}`
+    )
+    setOccupiedSeats(occupiedSeats)
+    console.log(occupiedSeats)
+  })
+}, [])
 
   const handleSeatClick = (event) => {
     const seat = event.target.dataset.seat

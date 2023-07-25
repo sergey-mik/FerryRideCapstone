@@ -10,14 +10,46 @@ namespace FerryRide.Repositories
     {
         public SeatReservationRepository(IConfiguration configuration) : base(configuration) { }
 
-        public IEnumerable<SeatReservation> GetSeatReservations()
+        //public IEnumerable<SeatReservation> GetSeatReservations()
+        //{
+        //    using (var conn = Connection)
+        //    {
+        //        conn.Open();
+        //        using (var cmd = conn.CreateCommand())
+        //        {
+        //            cmd.CommandText = "SELECT Id, TicketPurchaseId, SeatRow, SeatNumber FROM SeatReservation";
+
+        //            var reader = cmd.ExecuteReader();
+        //            var seatReservations = new List<SeatReservation>();
+
+        //            while (reader.Read())
+        //            {
+        //                seatReservations.Add(new SeatReservation
+        //                {
+        //                    Id = DbUtils.GetInt(reader, "Id"),
+        //                    TicketPurchaseId = DbUtils.GetInt(reader, "TicketPurchaseId"),
+        //                    SeatRow = DbUtils.GetInt(reader, "SeatRow"),
+        //                    SeatNumber = DbUtils.GetInt(reader, "SeatNumber"),
+        //                });
+        //            }
+        //            reader.Close();
+        //            return seatReservations;
+        //        }
+        //    }
+        //}
+
+        public IEnumerable<SeatReservation> GetSeatReservations(int ferryScheduleId)
         {
             using (var conn = Connection)
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Id, TicketPurchaseId, SeatRow, SeatNumber FROM SeatReservation";
+                    cmd.CommandText = @"SELECT sr.Id, sr.TicketPurchaseId, sr.SeatRow, sr.SeatNumber, tp.UserProfileId, tp.FerryScheduleId
+                                FROM SeatReservation sr
+                                JOIN TicketPurchase tp ON sr.TicketPurchaseId = tp.Id
+                                WHERE tp.FerryScheduleId = @FerryScheduleId";
+                    DbUtils.AddParameter(cmd, "@FerryScheduleId", ferryScheduleId);
 
                     var reader = cmd.ExecuteReader();
                     var seatReservations = new List<SeatReservation>();
@@ -30,6 +62,8 @@ namespace FerryRide.Repositories
                             TicketPurchaseId = DbUtils.GetInt(reader, "TicketPurchaseId"),
                             SeatRow = DbUtils.GetInt(reader, "SeatRow"),
                             SeatNumber = DbUtils.GetInt(reader, "SeatNumber"),
+                            UserProfileId = DbUtils.GetInt(reader, "UserProfileId"),
+                            FerryScheduleId = DbUtils.GetInt(reader, "FerryScheduleId")
                         });
                     }
                     reader.Close();

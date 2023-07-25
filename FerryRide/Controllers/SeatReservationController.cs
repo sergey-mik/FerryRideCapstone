@@ -20,9 +20,9 @@ namespace FerryRide.Controllers
 
         // GET: api/SeatReservation
         [HttpGet]
-        public IActionResult GetSeatReservations()
+        public IActionResult GetSeatReservations([FromQuery] int ferryScheduleId)
         {
-            var seatReservations = _seatReservationRepository.GetSeatReservations();
+            var seatReservations = _seatReservationRepository.GetSeatReservations(ferryScheduleId);
             return Ok(seatReservations);
         }
 

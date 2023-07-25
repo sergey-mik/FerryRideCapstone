@@ -11,6 +11,7 @@ import './Home.css'
 
 const Home = () => {
   const [trip, setTrip] = useState('Round Trip')
+  const [tripId, setTripId] = useState(null)
   const [departureDate, setDepartureDate] = useState(new Date())
   const [arrivalDate, setArrivalDate] = useState(new Date())
   const [origin, setOrigin] = useState('')
@@ -39,6 +40,16 @@ const Home = () => {
       />
     )
   }
+
+  useEffect(() => {
+    if (origin && destination) {
+      const selectedSchedule = schedules.find(
+        (schedule) =>
+          schedule.origin === origin && schedule.destination === destination
+      )
+      setTripId(selectedSchedule ? selectedSchedule.id : null)
+    }
+  }, [origin, destination, schedules])
 
   const handleNextButtonClick = async () => {
     // Get the firebaseUserId of the currently logged-in user
@@ -69,7 +80,6 @@ const Home = () => {
 
     // Update the state with the Ticket Purchase data
     setTicketPurchase(ticketPurchase)
-
   }
 
   const goToHome = () => setPage('home')
@@ -210,6 +220,7 @@ const Home = () => {
       <SeatBooking
         goToHome={goToHome}
         trip={trip}
+        tripId={tripId}
         departureDate={departureDate}
         arrivalDate={trip === 'Round Trip' ? arrivalDate : null}
         origin={origin}
