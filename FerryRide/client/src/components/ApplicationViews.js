@@ -1,10 +1,11 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./Login";
-import Register from "./Register";
-import Home from "./Home/Home";
-import UserComments from "./Comment/UserComments";
-import CommentForm from "./Comment/CommentForm";
+import React from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import Login from './Login'
+import Register from './Register'
+import Home from './Home/Home'
+import UserComments from './Comment/UserComments'
+import CommentForm from './Comment/CommentForm'
+import ProfilePage from './Profile/Profile'
 
 export default function ApplicationViews({ isLoggedIn }) {
   return (
@@ -23,6 +24,10 @@ export default function ApplicationViews({ isLoggedIn }) {
             path="/addcomment"
             element={isLoggedIn ? <CommentForm /> : <Navigate to="/login" />}
           />
+          <Route
+            path="/profile" // add a new route for the profile page
+            element={isLoggedIn ? <ProfilePage /> : <Navigate to="/login" />}
+          />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="*" element={<p>Whoops, nothing here...</p>} />
@@ -30,4 +35,4 @@ export default function ApplicationViews({ isLoggedIn }) {
       </Routes>
     </main>
   )
-};
+}

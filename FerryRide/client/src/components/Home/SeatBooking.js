@@ -1,28 +1,58 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Card, CardBody, CardText, CardTitle, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row, } from 'reactstrap'
-import { addSeatReservation, getAllSeatReservations } from '../../modules/seatManager'
+import {
+  Button,
+  Card,
+  CardBody,
+  CardText,
+  CardTitle,
+  Col,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+} from 'reactstrap'
+import {
+  addSeatReservation,
+  getAllSeatReservations,
+} from '../../modules/seatManager'
 import { addTicketPurchase } from '../../modules/ticketManager'
-
+import SeatPicker from './SeatPicker'
+import { useNavigate } from 'react-router-dom'
 import './SeatBooking.css'
 
-const SeatBooking = ({ goToHome, trip, tripId, departureDate, arrivalDate, origin, destination, ticketPurchase, }) => {
+const SeatBooking = ({
+  goToHome,
+  trip,
+  tripId,
+  setTripId,
+  departureDate,
+  returnDate,
+  origin,
+  destination,
+  ticketPurchase,
+}) => {
   const rows = Array.from({ length: 12 }, (_, i) => i + 1)
   const [selectedSeats, setSelectedSeats] = useState([])
   const [occupiedSeats, setOccupiedSeats] = useState([])
   const [seatReservations, setSeatReservations] = useState([])
-
   const [modal, setModal] = useState(false)
+  const [isOnwardTrip, setIsOnwardTrip] = useState(false)
+  // State variable to track if the return trip button has been clicked
+  const [returnTripClicked, setReturnTripClicked] = useState(false)
+  const navigate = useNavigate()
 
-useEffect(() => {
-  getAllSeatReservations(tripId).then((data) => {
-    const occupiedSeats = data.map(
-      (seatReservation) =>
-        `${seatReservation.seatRow}-${seatReservation.seatNumber}`
-    )
-    setOccupiedSeats(occupiedSeats)
-    console.log(occupiedSeats)
-  })
-}, [])
+  useEffect(() => {
+    console.log(tripId)
+    getAllSeatReservations(tripId).then((data) => {
+      const occupiedSeats = data.map(
+        (seatReservation) =>
+          `${seatReservation.seatRow}-${seatReservation.seatNumber}`
+      )
+      setOccupiedSeats(occupiedSeats)
+      console.log(occupiedSeats)
+    })
+  }, [tripId])
 
   const handleSeatClick = (event) => {
     const seat = event.target.dataset.seat
@@ -36,43 +66,87 @@ useEffect(() => {
     }
   }
 
-const calculateTotal = () => {
-  let total = 0
-  selectedSeats.forEach((seat) => {
-    total += 25
-  })
-  return total
-}
-
-
-const handlePurchaseClick = () => {
-  // Post the ticketPurchase data to the server
-  addTicketPurchase(ticketPurchase)
-    .then((response) => response.json())
-    .then((data) => {
-      setSeatReservations(
-        selectedSeats.map((seat) => {
-          // Split the seat identifier into SeatRow and SeatNumber
-          const [SeatRow, SeatNumber] = seat.split('-').map(Number)
-
-          return {
-            // Set the properties of the seatReservation object based on data model
-            TicketPurchaseId: data.id,
-            SeatRow: SeatRow,
-            SeatNumber: SeatNumber,
-          }
-        })
-      )
-      setModal(true) // This line opens the modal showing the ticket confirmation
+  const calculateTotal = () => {
+    let total = 0
+    selectedSeats.forEach((seat) => {
+      total += 25
     })
-    .catch((error) => {
-      // Handle error while adding ticket purchase
-    })
-}
+    return total
+  }
 
+  const handleReturnTripClick = () => {
+    setIsOnwardTrip(true)
+    // Create a new departureTicketPurchase object for the departure trip
+    // const departureTicketPurchase = {
+    //   ...ticketPurchase,
+    //   DepartureDateTime: departureDate,
+    //   ReturnDate: null,
+    //   Origin: origin,
+    //   Destination: destination,
+    // }
+    // console.log(departureTicketPurchase)
+
+    // Post the departureTicketPurchase data to the server
+    addTicketPurchase(ticketPurchase)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+        setSeatReservations(
+          selectedSeats.map((seat) => {
+            // Split the seat identifier into SeatRow and SeatNumber
+            const [SeatRow, SeatNumber] = seat.split('-').map(Number)
+
+            return {
+              // Set the properties of the seatReservation object based on data model
+              TicketPurchaseId: data.id,
+              SeatRow: SeatRow,
+              SeatNumber: SeatNumber,
+            }
+          })
+        )
+        setModal(true)
+      })
+      .catch((error) => {
+        // Handle error while adding ticket purchase
+      })
+    setReturnTripClicked(true)
+  }
+
+  const handlePurchaseClick = () => {
+    // Post the ticketPurchase data to the server
+    addTicketPurchase(ticketPurchase)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+        setSeatReservations(
+          selectedSeats.map((seat) => {
+            // Split the seat identifier into SeatRow and SeatNumber
+            const [SeatRow, SeatNumber] = seat.split('-').map(Number)
+
+            return {
+              // Set the properties of the seatReservation object based on data model
+              TicketPurchaseId: data.id,
+              SeatRow: SeatRow,
+              SeatNumber: SeatNumber,
+            }
+          })
+        )
+        setModal(true) // This line opens the modal showing the ticket confirmation
+      })
+      .catch((error) => {
+        // Handle error while adding ticket purchase
+      })
+    setIsOnwardTrip(false)
+  }
 
   const handleConfirmPurchaseClick = () => {
-
+    // If tripId is an odd number, increase its value by one
+    if (tripId % 2 === 1) {
+      setTripId(tripId + 1)
+      // If tripId is an even number, decrease its value by one
+    } else {
+      setTripId(tripId - 1)
+    }
     // Iterate through all the seatReservations
     seatReservations.forEach((seatReservation) => {
       addSeatReservation(seatReservation)
@@ -84,11 +158,21 @@ const handlePurchaseClick = () => {
           // Handle error while adding seat reservation
         })
     })
+    // clear selected seats
+    setSelectedSeats([])
 
-    // Closes the modal after making addSeatReservation requests
-    setModal(false)
+    // If this is the onward trip, set isOnwardTrip to false
+    // so that the next click will be treated as the return trip
+    if (isOnwardTrip) {
+      setIsOnwardTrip(false)
+      setModal(false)
+    }
+    // If this is the return trip, close the modal and navigate to the profile page
+    else {
+      setModal(false)
+      navigate('/profile')
+    }
   }
-
 
   return (
     <div className="plane">
@@ -101,10 +185,10 @@ const handlePurchaseClick = () => {
               Departure Date: {departureDate.toLocaleDateString()}{' '}
               {departureDate.toLocaleTimeString()}
             </CardText>
-            {arrivalDate ? (
+            {returnDate ? (
               <CardText>
-                Arrival Date: {arrivalDate.toLocaleDateString()}{' '}
-                {arrivalDate.toLocaleTimeString()}
+                Return Date: {returnDate.toLocaleDateString()}{' '}
+                {returnDate.toLocaleTimeString()}
               </CardText>
             ) : null}
             <CardText>Origin: {origin.toString()}</CardText>
@@ -141,69 +225,33 @@ const handlePurchaseClick = () => {
         </Col>
         <Col md={3}></Col>
         <Col md={3}>
-          <Button
-            className="arrow-button"
-            color="primary"
-            onClick={handlePurchaseClick}
-          >
-            Reserve
-          </Button>
+          {returnDate && !returnTripClicked ? (
+            <Button
+              className="arrow-button"
+              color="primary"
+              onClick={handleReturnTripClick}
+            >
+              Return Trip
+            </Button>
+          ) : (
+            <Button
+              className="arrow-button"
+              color="primary"
+              onClick={handlePurchaseClick}
+            >
+              Reserve
+            </Button>
+          )}
         </Col>
         <Col md={2}></Col>
       </Row>
 
-      <div className="cabin">
-        <div className="plane-top"></div>
-        <div className="plane-tail"></div>
-        {rows.map((row) => (
-          <div
-            className={`seat-row ${
-              row <= 3
-                ? 'first-class'
-                : row <= 6
-                ? 'business-class'
-                : 'economy-class'
-            }`}
-            key={row}
-          >
-            {['one', 'two', 'three'].map((seat, index) => (
-              <div className={`seat ${seat}`} key={seat}>
-                <button
-                  id={`seat-${row}-${index + 1}`}
-                  className={`seat-button ${
-                    selectedSeats.includes(`${row}-${index + 1}`)
-                      ? 'selected'
-                      : occupiedSeats.includes(`${row}-${index + 1}`)
-                      ? 'occupied'
-                      : 'empty'
-                  }`}
-                  data-seat={`${row}-${index + 1}`}
-                  onClick={handleSeatClick}
-                />
-              </div>
-            ))}
-            <div className="aisle">
-              <span className="aisle-number">{row}</span>
-            </div>
-            {['four', 'five', 'six'].map((seat, index) => (
-              <div className={`seat ${seat}`} key={seat}>
-                <button
-                  id={`seat-${row}-${index + 4}`}
-                  className={`seat-button ${
-                    selectedSeats.includes(`${row}-${index + 4}`)
-                      ? 'selected'
-                      : occupiedSeats.includes(`${row}-${index + 4}`)
-                      ? 'occupied'
-                      : 'empty'
-                  }`}
-                  data-seat={`${row}-${index + 4}`}
-                  onClick={handleSeatClick}
-                />
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+      <SeatPicker
+        rows={rows}
+        selectedSeats={selectedSeats}
+        occupiedSeats={occupiedSeats}
+        handleSeatClick={handleSeatClick}
+      />
 
       <div className="seat-booking-container">
         <Modal isOpen={modal} toggle={handlePurchaseClick}>
@@ -211,28 +259,32 @@ const handlePurchaseClick = () => {
             Trip Information
           </ModalHeader>
           <ModalBody>
-            <p>Trip: {trip.toString()}</p>
+            <p> Trip: {isOnwardTrip ? 'Onward' : 'Return'} </p>
             <p>
+              {' '}
               Departure Date: {departureDate.toLocaleDateString()}{' '}
-              {departureDate.toLocaleTimeString()}
+              {departureDate.toLocaleTimeString()}{' '}
             </p>
-            {arrivalDate && (
-              <p>
-                Arrival Date: {arrivalDate.toLocaleDateString()}{' '}
-                {arrivalDate.toLocaleTimeString()}{' '}
-              </p>
-            )}
-            <p>Origin: {origin.toString()}</p>
-            <p>Destination: {destination.toString()}</p>
+            <p>
+              {' '}
+              Origin:{' '}
+              {isOnwardTrip ? origin.toString() : destination.toString()}{' '}
+            </p>
+            <p>
+              {' '}
+              Destination:{' '}
+              {isOnwardTrip ? destination.toString() : origin.toString()}{' '}
+            </p>
             {seatReservations.map((seat, index) => (
               <p key={index}>
                 Seat: Row {seat.SeatRow}, Number {seat.SeatNumber}
               </p>
             ))}
           </ModalBody>
+
           <ModalFooter>
             <Button color="primary" onClick={handleConfirmPurchaseClick}>
-              Confirm Purchase
+              {isOnwardTrip ? 'Confirm Onward' : 'Confirm Return'}
             </Button>{' '}
             <Button color="secondary" onClick={handlePurchaseClick}>
               Cancel

@@ -13,7 +13,7 @@ const Home = () => {
   const [trip, setTrip] = useState('Round Trip')
   const [tripId, setTripId] = useState(null)
   const [departureDate, setDepartureDate] = useState(new Date())
-  const [arrivalDate, setArrivalDate] = useState(new Date())
+  const [returnDate, setReturnDate] = useState(new Date())
   const [origin, setOrigin] = useState('')
   const [destination, setDestination] = useState('')
   const [schedules, setSchedules] = useState([])
@@ -41,24 +41,29 @@ const Home = () => {
     )
   }
 
-  useEffect(() => {
-    if (origin && destination) {
-      const selectedSchedule = schedules.find(
-        (schedule) =>
-          schedule.origin === origin && schedule.destination === destination
-      )
-      setTripId(selectedSchedule ? selectedSchedule.id : null)
-    }
-  }, [origin, destination, schedules])
+  // useEffect(() => {
+  //   if (origin && destination) {
+  //     const selectedSchedule = schedules.find(
+  //       (schedule) =>
+  //         schedule.origin === origin && schedule.destination === destination
+  //     )
+  //     setTripId(selectedSchedule ? selectedSchedule.id : null)
+  //   }
+  // }, [origin, destination, schedules])
+
+    useEffect(() => {
+      if (origin && destination) {
+        const selectedSchedule = schedules.find(
+          (schedule) =>
+            schedule.origin === origin && schedule.destination === destination
+        )
+        setTripId(selectedSchedule ? selectedSchedule.id : null)
+      }
+    }, [origin, destination, schedules])
 
   const handleNextButtonClick = async () => {
-    // Get the firebaseUserId of the currently logged-in user
     const firebaseUserId = firebase.auth().currentUser.uid
-
-    // Call the getUserProfileId function to get the UserProfileId
     const userProfileId = await getUserProfileId(firebaseUserId)
-
-    // Find the schedule object in the schedules array that matches the selected origin and destination ports
     const selectedSchedule = schedules.find(
       (schedule) =>
         schedule.origin === origin && schedule.destination === destination
@@ -67,15 +72,15 @@ const Home = () => {
     // Get the FerryScheduleId from the selected schedule object
     const ferryScheduleId = selectedSchedule ? selectedSchedule.id : null
 
-    // Collect the ticket purchase data from your component state or form fields
+    // Collect the ticket purchase data from component state or form fields
     const ticketPurchase = {
       UserProfileId: userProfileId,
       FerryScheduleId: ferryScheduleId,
       DepartureDateTime: departureDate.toISOString(),
     }
-    // Conditionally add the ArrivalDateTime property to the ticketPurchase object if trip is 'Round Trip'
+    // Conditionally add the ReturnDateTime property to the ticketPurchase object if trip is 'Round Trip'
     if (trip === 'Round Trip') {
-      ticketPurchase.ArrivalDateTime = arrivalDate.toISOString()
+      ticketPurchase.ReturnDateTime = returnDate.toISOString()
     }
 
     // Update the state with the Ticket Purchase data
@@ -127,7 +132,7 @@ const Home = () => {
             </Col>
             <Col md={2}></Col>
             <Col md={4}>
-              <DateTimePicker date={arrivalDate} setDate={setArrivalDate} />
+              <DateTimePicker date={returnDate} setDate={setReturnDate} />
             </Col>
           </Row>
         ) : (
@@ -200,8 +205,8 @@ const Home = () => {
                   alert('Please select a port before proceeding')
                 } else if (!departureDate) {
                   alert('Please select a departure date before proceeding')
-                } else if (trip === 'Round Trip' && !arrivalDate) {
-                  alert('Please select an arrival date before proceeding')
+                } else if (trip === 'Round Trip' && !returnDate) {
+                  alert('Please select an return date before proceeding')
                 } else {
                   handleNextButtonClick()
                   setPage('seatBooking')
@@ -221,8 +226,9 @@ const Home = () => {
         goToHome={goToHome}
         trip={trip}
         tripId={tripId}
+        setTripId={setTripId}
         departureDate={departureDate}
-        arrivalDate={trip === 'Round Trip' ? arrivalDate : null}
+        returnDate={trip === 'Round Trip' ? returnDate : null}
         origin={origin}
         destination={destination}
         ticketPurchase={ticketPurchase}

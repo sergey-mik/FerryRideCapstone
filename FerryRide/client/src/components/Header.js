@@ -37,6 +37,11 @@ export default function Header({ isLoggedIn }) {
                     Comments
                   </NavLink>
                 </NavItem>
+                <NavItem>
+                  <NavLink tag={RRNavLink} to="/profile">
+                    Profile
+                  </NavLink>
+                </NavItem>
               </>
             )}
           </Nav>
