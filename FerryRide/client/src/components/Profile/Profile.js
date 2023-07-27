@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Container,
   Row,
@@ -9,49 +9,86 @@ import {
   ListGroup,
   ListGroupItem,
 } from 'reactstrap'
+import { getAllTrips } from '../../modules/profileManager'
 
-const ProfilePage = ({ upcomingTrips, tripHistory, savedTrips }) => {
+const ProfilePage = ({ userProfileId }) => {
+  const [pastTrips, setPastTrips] = useState([])
+  const [upcomingTrips, setUpcomingTrips] = useState([])
+
+  useEffect(() => {
+    getAllTrips(userProfileId).then((trips) => {
+      const now = new Date()
+      setPastTrips(
+        trips.filter((trip) => new Date(trip.departureDateTime) < now)
+      )
+      setUpcomingTrips(
+        trips
+          .filter((trip) => new Date(trip.departureDateTime) >= now)
+          .sort(
+            (a, b) =>
+              new Date(a.departureDateTime) - new Date(b.departureDateTime)
+          )
+      )
+    })
+  }, [userProfileId])
+
   return (
     <Container>
       <Row>
         <Col>
           <Card>
+            <CardHeader>Past Trips</CardHeader>
+            <CardBody>
+              <ListGroup>
+                {pastTrips.map((trip) => {
+                  const departureDateTime = new Date(trip.departureDateTime)
+                  const options = {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                  }
+                  const readableDateTime = departureDateTime.toLocaleDateString(
+                    'en-US',
+                    options
+                  )
+                  return (
+                    <ListGroupItem key={trip.id}>
+                      {trip.origin} - {trip.destination}: {readableDateTime}
+                    </ListGroupItem>
+                  )
+                })}
+              </ListGroup>
+            </CardBody>
+          </Card>
+        </Col>
+        <Col>
+          <Card>
             <CardHeader>Upcoming Trips</CardHeader>
             <CardBody>
               <ListGroup>
-                {upcomingTrips.map((trip) => (
-                  <ListGroupItem key={trip.id}>
-                    {trip.destination} - {trip.date}
-                  </ListGroupItem>
-                ))}
-              </ListGroup>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col>
-          <Card>
-            <CardHeader>Trip History</CardHeader>
-            <CardBody>
-              <ListGroup>
-                {tripHistory.map((trip) => (
-                  <ListGroupItem key={trip.id}>
-                    {trip.destination} - {trip.date}
-                  </ListGroupItem>
-                ))}
-              </ListGroup>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col>
-          <Card>
-            <CardHeader>Saved Trips</CardHeader>
-            <CardBody>
-              <ListGroup>
-                {savedTrips.map((trip) => (
-                  <ListGroupItem key={trip.id}>
-                    {trip.destination} - {trip.date}
-                  </ListGroupItem>
-                ))}
+                {upcomingTrips.map((trip) => {
+                  const departureDateTime = new Date(trip.departureDateTime)
+                  const options = {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                  }
+                  const readableDateTime = departureDateTime.toLocaleDateString(
+                    'en-US',
+                    options
+                  )
+                  return (
+                    <ListGroupItem key={trip.id}>
+                      {trip.origin} - {trip.destination}: {readableDateTime}
+                    </ListGroupItem>
+                  )
+                })}
               </ListGroup>
             </CardBody>
           </Card>
