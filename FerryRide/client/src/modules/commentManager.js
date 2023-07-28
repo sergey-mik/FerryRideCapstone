@@ -38,7 +38,7 @@ export const getAllComments = () => {
     })
   }
 
-export const AddComment = (post) => {
+export const AddComment = (addComment) => {
   return getToken().then((token) => {
     return fetch(apiUrl, {
       method: 'POST',
@@ -46,13 +46,68 @@ export const AddComment = (post) => {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(post),
+      body: JSON.stringify(addComment),
+    })
+  })
+}
+
+export const deleteComment = (id) => {
+  return getToken().then((token) => {
+    return fetch(`${apiUrl}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  })
+}
+
+export const getCommentsByTicketPurchaseId = (id) => {
+  return getToken().then((token) => {
+    return fetch(`${apiUrl}/ticket/${id}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     }).then((resp) => {
       if (resp.ok) {
-        console.log('Comment made successfully!')
         return resp.json()
       } else {
-        throw new Error('An error occurred while trying to add a post.')
+        throw new Error(
+          'An unknown error occurred while trying to get comments.'
+        )
+      }
+    })
+  })
+}
+
+export const updateComment = (comment) => {
+  return getToken().then((token) => {
+    return fetch(`${apiUrl}/${comment.id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(comment),
+    })
+  })
+}
+
+export const getCommentDetails = (id) => {
+  return getToken().then((token) => {
+    return fetch(`${apiUrl}/${id}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((resp) => {
+      if (resp.ok) {
+        return resp.json()
+      } else {
+        throw new Error(
+          'An unknown error occurred while trying to get comment details.'
+        )
       }
     })
   })

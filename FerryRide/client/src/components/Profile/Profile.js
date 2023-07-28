@@ -9,6 +9,7 @@ import {
   ListGroup,
   ListGroupItem,
 } from 'reactstrap'
+import { Link } from 'react-router-dom'
 import { getAllTrips } from '../../modules/profileManager'
 
 const ProfilePage = ({ userProfileId }) => {
@@ -33,7 +34,7 @@ const ProfilePage = ({ userProfileId }) => {
   }, [userProfileId])
 
   return (
-    <Container>
+    <Container style={{ marginTop: '50px' }}>
       <Row>
         <Col>
           <Card>
@@ -56,7 +57,9 @@ const ProfilePage = ({ userProfileId }) => {
                   )
                   return (
                     <ListGroupItem key={trip.id}>
-                      {trip.origin} - {trip.destination}: {readableDateTime}
+                      <Link to={`/comment/ticket/${trip.id}`}>
+                        {trip.origin} - {trip.destination}: {readableDateTime}
+                      </Link>
                     </ListGroupItem>
                   )
                 })}

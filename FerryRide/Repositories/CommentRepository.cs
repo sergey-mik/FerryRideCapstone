@@ -1,6 +1,7 @@
 ﻿using FerryRide.Models;
 using FerryRide.Utils;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 
 namespace FerryRide.Repositories
@@ -17,9 +18,12 @@ namespace FerryRide.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT Id, TicketPurchaseId, Subject, Content, CreateDateTime
-                        FROM Comment
-                    ";
+                SELECT c.Id, c.TicketPurchaseId, c.Subject, c.Content, c.CreateDateTime,
+                       u.FirstName + ' ' + u.LastName AS AuthorName
+                FROM Comment c
+                JOIN TicketPurchase tp ON c.TicketPurchaseId = tp.Id
+                JOIN UserProfile u ON tp.UserProfileId = u.Id
+            ";
 
                     var reader = cmd.ExecuteReader();
 
@@ -32,7 +36,8 @@ namespace FerryRide.Repositories
                             TicketPurchaseId = DbUtils.GetInt(reader, "TicketPurchaseId"),
                             Subject = DbUtils.GetString(reader, "Subject"),
                             Content = DbUtils.GetString(reader, "Content"),
-                            CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime")
+                            CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
+                            AuthorName = DbUtils.GetString(reader, "AuthorName")
                         });
                     }
 
@@ -43,7 +48,8 @@ namespace FerryRide.Repositories
             }
         }
 
-        public Comment GetCommentById(int id)
+
+        public List<Comment> GetCommentsByTripId(int id)
         {
             using (var conn = Connection)
             {
@@ -51,30 +57,27 @@ namespace FerryRide.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT Id, TicketPurchaseId, Subject, Content, CreateDateTime
-                        FROM Comment
-                        WHERE Id = @id
-                    ";
+                SELECT c.Id, c.TicketPurchaseId, c.Subject, c.Content, c.CreateDateTime
+                FROM Comment c
+                WHERE c.TicketPurchaseId = @id
+            ";
                     DbUtils.AddParameter(cmd, "@id", id);
 
                     var reader = cmd.ExecuteReader();
-
-                    Comment comment = null;
-                    if (reader.Read())
+                    var comments = new List<Comment>();
+                    while (reader.Read())
                     {
-                        comment = new Comment()
+                        comments.Add(new Comment()
                         {
                             Id = DbUtils.GetInt(reader, "Id"),
                             TicketPurchaseId = DbUtils.GetInt(reader, "TicketPurchaseId"),
                             Subject = DbUtils.GetString(reader, "Subject"),
                             Content = DbUtils.GetString(reader, "Content"),
-                            CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime")
-                        };
+                            CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
+                        });
                     }
-
                     reader.Close();
-
-                    return comment;
+                    return comments;
                 }
             }
         }
@@ -100,5 +103,117 @@ namespace FerryRide.Repositories
                 }
             }
         }
+
+        public List<Comment> GetUserComments(int userProfileId)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                SELECT c.Id, c.TicketPurchaseId, c.Subject, c.Content, c.CreateDateTime
+                FROM Comment c
+                JOIN TicketPurchase tp ON c.TicketPurchaseId = tp.Id
+                WHERE tp.UserProfileId = @userProfileId
+            ";
+                    DbUtils.AddParameter(cmd, "@userProfileId", userProfileId);
+
+                    var reader = cmd.ExecuteReader();
+                    var comments = new List<Comment>();
+                    while (reader.Read())
+                    {
+                        comments.Add(new Comment()
+                        {
+                            Id = DbUtils.GetInt(reader, "Id"),
+                            TicketPurchaseId = DbUtils.GetInt(reader, "TicketPurchaseId"),
+                            Subject = DbUtils.GetString(reader, "Subject"),
+                            Content = DbUtils.GetString(reader, "Content"),
+                            CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime")
+                        });
+                    }
+
+                    reader.Close();
+
+                    return comments;
+                }
+            }
+        }
+
+        public List<Comment> GetCommentsByTicketPurchaseId(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                SELECT c.Id, c.TicketPurchaseId, c.Subject, c.Content, c.CreateDateTime
+                FROM Comment c
+                WHERE c.TicketPurchaseId = @id
+            ";
+                    DbUtils.AddParameter(cmd, "@id", id);
+
+                    var reader = cmd.ExecuteReader();
+                    var comments = new List<Comment>();
+                    while (reader.Read())
+                    {
+                        comments.Add(new Comment()
+                        {
+                            Id = DbUtils.GetInt(reader, "Id"),
+                            TicketPurchaseId = DbUtils.GetInt(reader, "TicketPurchaseId"),
+                            Subject = DbUtils.GetString(reader, "Subject"),
+                            Content = DbUtils.GetString(reader, "Content"),
+                            CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
+                        });
+                    }
+                    reader.Close();
+                    return comments;
+                }
+            }
+        }
+
+        public void UpdateComment(Comment comment)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    UPDATE Comment 
+                    SET
+                        TicketPurchaseId = @TicketPurchaseId,
+                        Subject = @Subject,
+                        Content = @Content,
+                        CreateDateTime = @CreateDateTime
+                    WHERE Id = @Id
+                ";
+
+                    DbUtils.AddParameter(cmd, "@TicketPurchaseId", comment.TicketPurchaseId);
+                    DbUtils.AddParameter(cmd, "@Subject", comment.Subject);
+                    DbUtils.AddParameter(cmd, "@Content", comment.Content);
+                    DbUtils.AddParameter(cmd, "@CreateDateTime", comment.CreateDateTime);
+                    DbUtils.AddParameter(cmd, "@Id", comment.Id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void DeleteComment(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM Comment WHERE Id = @Id";
+                    DbUtils.AddParameter(cmd, "@Id", id);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
     }
 }

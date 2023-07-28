@@ -9,5 +9,6 @@ namespace FerryRide.Models
         public string Subject { get; set; }
         public string Content { get; set; }
         public DateTime CreateDateTime { get; set; }
+        public string AuthorName { get; set; }
     }
 }

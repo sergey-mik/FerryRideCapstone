@@ -1,14 +1,23 @@
 import React, { useState } from 'react'
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap'
 import './CommentForm.css'
+import { AddComment } from '../../modules/commentManager'
+import { useParams } from 'react-router-dom'
 
 function CommentForm() {
   const [subject, setSubject] = useState('')
   const [content, setContent] = useState('')
+  const { id } = useParams()
 
   const handleSubmit = (event) => {
     event.preventDefault()
     console.log({ subject, content })
+    AddComment({
+      subject,
+      content,
+      ticketPurchaseId: parseInt(id),
+      CreateDateTime: new Date(),
+    })
     setSubject('')
     setContent('')
   }

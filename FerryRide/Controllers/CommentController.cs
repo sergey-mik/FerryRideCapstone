@@ -24,21 +24,53 @@ namespace FerryRide.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult GetCommentsByTripId(int id)
         {
-            Comment comment = _commentRepository.GetCommentById(id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-            return Ok(comment);
+            List<Comment> comments = _commentRepository.GetCommentsByTripId(id);
+            return Ok(comments);
         }
 
         [HttpPost]
         public IActionResult Post(Comment comment)
         {
             _commentRepository.AddComment(comment);
-            return CreatedAtAction(nameof(Get), new { id = comment.Id }, comment);
+            return CreatedAtAction(nameof(GetCommentsByTripId), new { id = comment.Id }, comment);
         }
+
+        [HttpGet("user/{userId}")]
+        public IActionResult GetUserComments(int userId)
+        {
+            List<Comment> comments = _commentRepository.GetUserComments(userId);
+            return Ok(comments);
+        }
+
+        [HttpGet("ticket/{ticketPurchaseId}")]
+        public IActionResult GetCommentsByTicketPurchaseId(int ticketPurchaseId)
+        {
+            List<Comment> comments = _commentRepository.GetCommentsByTicketPurchaseId(ticketPurchaseId);
+            return Ok(comments);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateComment(int id, Comment comment)
+        {
+            if (id != comment.Id)
+            {
+                return BadRequest();
+            }
+
+            _commentRepository.UpdateComment(comment);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteComment(int id)
+        {
+            _commentRepository.DeleteComment(id);
+            return NoContent();
+        }
+
+
     }
 }
