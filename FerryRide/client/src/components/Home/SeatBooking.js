@@ -42,6 +42,31 @@ const SeatBooking = ({
   const [returnTripClicked, setReturnTripClicked] = useState(false)
   const navigate = useNavigate()
 
+  function formatDate(date) {
+    let hours = date.getHours()
+    let minutes = date.getMinutes()
+    let ampm = hours >= 12 ? 'PM' : 'AM'
+    hours = hours % 12
+    hours = hours ? hours : 12
+    minutes = minutes < 10 ? '0' + minutes : minutes
+    let strTime = hours + ':' + minutes + ' ' + ampm
+
+    return (
+      date.getMonth() +
+      1 +
+      '/' +
+      date.getDate() +
+      '/' +
+      date.getFullYear() +
+      ', ' +
+      strTime
+    )
+  }
+
+  const addFiveHours = (date) => {
+    return new Date(date.getTime() + 5 * 60 * 60 * 1000)
+  }
+
   useEffect(() => {
     console.log(tripId)
     getAllSeatReservations(tripId).then((data) => {
@@ -76,15 +101,6 @@ const SeatBooking = ({
 
   const handleReturnTripClick = () => {
     setIsOnwardTrip(true)
-    // Create a new departureTicketPurchase object for the departure trip
-    // const departureTicketPurchase = {
-    //   ...ticketPurchase,
-    //   DepartureDateTime: departureDate,
-    //   ReturnDate: null,
-    //   Origin: origin,
-    //   Destination: destination,
-    // }
-    // console.log(departureTicketPurchase)
 
     // Post the departureTicketPurchase data to the server
     addTicketPurchase(ticketPurchase)
@@ -113,6 +129,8 @@ const SeatBooking = ({
   }
 
   const handlePurchaseClick = () => {
+    // Update the DepartureDateTime property with the ReturnDateTime value
+    ticketPurchase.DepartureDateTime = ticketPurchase.ReturnDateTime
     // Post the ticketPurchase data to the server
     addTicketPurchase(ticketPurchase)
       .then((response) => response.json())
@@ -182,13 +200,11 @@ const SeatBooking = ({
             <CardTitle tag="h5">Trip Information</CardTitle>
             <CardText>Trip: {trip.toString()}</CardText>
             <CardText>
-              Departure Date: {departureDate.toLocaleDateString()}{' '}
-              {departureDate.toLocaleTimeString()}
+              Departure Date: {formatDate(addFiveHours(departureDate))}
             </CardText>
             {returnDate ? (
               <CardText>
-                Return Date: {returnDate.toLocaleDateString()}{' '}
-                {returnDate.toLocaleTimeString()}
+                Return Date: {formatDate(addFiveHours(returnDate))}
               </CardText>
             ) : null}
             <CardText>Origin: {origin.toString()}</CardText>
@@ -239,7 +255,7 @@ const SeatBooking = ({
               color="primary"
               onClick={handlePurchaseClick}
             >
-              Reserve
+              Continue
             </Button>
           )}
         </Col>
@@ -259,12 +275,14 @@ const SeatBooking = ({
             Trip Information
           </ModalHeader>
           <ModalBody>
-            <p> Trip: {isOnwardTrip ? 'Onward' : 'Return'} </p>
+            {/* <p> Trip: {isOnwardTrip ? 'Onward' : 'Return'} </p> */}
             <p>
-              {' '}
-              Departure Date: {departureDate.toLocaleDateString()}{' '}
-              {departureDate.toLocaleTimeString()}{' '}
+              Departure Date:{' '}
+              {isOnwardTrip || !returnDate
+                ? formatDate(addFiveHours(departureDate))
+                : formatDate(addFiveHours(returnDate))}
             </p>
+
             <p>
               {' '}
               Origin:{' '}

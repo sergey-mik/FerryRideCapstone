@@ -19,10 +19,12 @@ namespace FerryRide.Repositories
                 {
                     cmd.CommandText = @"
                 SELECT c.Id, c.TicketPurchaseId, c.Subject, c.Content, c.CreateDateTime,
-                       u.FirstName + ' ' + u.LastName AS AuthorName
+                       u.FirstName + ' ' + u.LastName AS AuthorName,
+                       fs.Id AS FerryScheduleId, fs.Origin AS DeparturePortName, fs.Destination AS ArrivalPortName
                 FROM Comment c
                 JOIN TicketPurchase tp ON c.TicketPurchaseId = tp.Id
                 JOIN UserProfile u ON tp.UserProfileId = u.Id
+                JOIN FerrySchedule fs ON tp.FerryScheduleId = fs.Id
             ";
 
                     var reader = cmd.ExecuteReader();
@@ -37,7 +39,10 @@ namespace FerryRide.Repositories
                             Subject = DbUtils.GetString(reader, "Subject"),
                             Content = DbUtils.GetString(reader, "Content"),
                             CreateDateTime = DbUtils.GetDateTime(reader, "CreateDateTime"),
-                            AuthorName = DbUtils.GetString(reader, "AuthorName")
+                            AuthorName = DbUtils.GetString(reader, "AuthorName"),
+                            FerryScheduleId = DbUtils.GetInt(reader, "FerryScheduleId"),
+                            DeparturePortName = DbUtils.GetString(reader, "DeparturePortName"),
+                            ArrivalPortName = DbUtils.GetString(reader, "ArrivalPortName")
                         });
                     }
 
@@ -47,7 +52,6 @@ namespace FerryRide.Repositories
                 }
             }
         }
-
 
         public List<Comment> GetCommentsByTripId(int id)
         {

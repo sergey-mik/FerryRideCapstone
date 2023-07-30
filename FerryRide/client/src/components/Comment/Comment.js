@@ -18,11 +18,11 @@ export default function Comment({ comment, currentUserId, onDelete }) {
     month: '2-digit',
     day: '2-digit',
   })
-  const timeString = createDate.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  })
+  // const timeString = createDate.toLocaleTimeString('en-US', {
+  //   hour: '2-digit',
+  //   minute: '2-digit',
+  //   hour12: true,
+  // })
 
   function handleSubjectChange(event) {
     setUpdatedSubject(event.target.value)
@@ -65,7 +65,7 @@ export default function Comment({ comment, currentUserId, onDelete }) {
             <CardTitle tag="h5">Subject: {currentComment.subject}</CardTitle>
             <CardText>Content: {currentComment.content}</CardText>
             <p className="text-muted">
-              Published on {dateString}, {timeString}
+              Published on {dateString}
             </p>
             {currentUserId === currentComment.authorId && (
               <>

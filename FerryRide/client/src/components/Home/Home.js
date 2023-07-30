@@ -2,12 +2,17 @@ import React, { useState, useEffect } from 'react'
 import { Label, Input, Button, Col, Row } from 'reactstrap'
 import { getAllSchedules } from '../../modules/scheduleManager'
 import { getUserProfileId } from '../../modules/userProfileManager'
-import firebase from 'firebase/app'
-import 'firebase/auth'
-
+import SaveTripButton from './SaveTripButton'
 import DateTimePicker from './DateTimePicker'
 import SeatBooking from './SeatBooking'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 import './Home.css'
+
+const toUTC = (date) => {
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
+  return date
+}
 
 const Home = () => {
   const [trip, setTrip] = useState('Round Trip')
@@ -30,36 +35,27 @@ const Home = () => {
     fetchSchedules()
   }, [])
 
-  const PortImage = () => {
-    return (
-      <img
-        src="/images/port1.jpg"
-        className="port"
-        alt="port"
-        draggable="false"
-      />
-    )
-  }
-
-  // useEffect(() => {
-  //   if (origin && destination) {
-  //     const selectedSchedule = schedules.find(
-  //       (schedule) =>
-  //         schedule.origin === origin && schedule.destination === destination
-  //     )
-  //     setTripId(selectedSchedule ? selectedSchedule.id : null)
-  //   }
-  // }, [origin, destination, schedules])
-
-    useEffect(() => {
-      if (origin && destination) {
-        const selectedSchedule = schedules.find(
-          (schedule) =>
-            schedule.origin === origin && schedule.destination === destination
-        )
-        setTripId(selectedSchedule ? selectedSchedule.id : null)
+    const PortImage = ({ portName }) => {
+      let imageSrc = '/images/port1.jpg' // default image
+      if (portName === 'Port Angeles') {
+        imageSrc = '/images/port1.jpg'
+      } else if (portName === 'Victoria') {
+        imageSrc = '/images/port2.jpg'
       }
-    }, [origin, destination, schedules])
+      return (
+        <img src={imageSrc} className="port" alt="port" draggable="false" />
+      )
+    }
+
+  useEffect(() => {
+    if (origin && destination) {
+      const selectedSchedule = schedules.find(
+        (schedule) =>
+          schedule.origin === origin && schedule.destination === destination
+      )
+      setTripId(selectedSchedule ? selectedSchedule.id : null)
+    }
+  }, [origin, destination, schedules])
 
   const handleNextButtonClick = async () => {
     const firebaseUserId = firebase.auth().currentUser.uid
@@ -76,17 +72,22 @@ const Home = () => {
     const ticketPurchase = {
       UserProfileId: userProfileId,
       FerryScheduleId: ferryScheduleId,
-      DepartureDateTime: departureDate.toISOString(),
+      DepartureDateTime: toUTC(departureDate).toISOString(),
     }
+
     // Conditionally add the ReturnDateTime property to the ticketPurchase object if trip is 'Round Trip'
     if (trip === 'Round Trip') {
-      ticketPurchase.ReturnDateTime = returnDate.toISOString()
+      ticketPurchase.ReturnDateTime = toUTC(returnDate).toISOString()
     }
 
     // Update the state with the Ticket Purchase data
     setTicketPurchase(ticketPurchase)
   }
 
+const hasNonRoundSeconds = (date) => {
+  return date.getSeconds() % 10 !== 0
+}
+  
   const goToHome = () => setPage('home')
 
   if (page === 'home') {
@@ -143,10 +144,10 @@ const Home = () => {
           </Row>
         )}
 
-        <Row form>
+        <Row>
           <Col md={6}>
             <div id="port">
-              <PortImage />
+              <PortImage portName={origin} />
             </div>
 
             <Label for="originSelect">Select Origin</Label>
@@ -171,7 +172,7 @@ const Home = () => {
 
           <Col md={4}>
             <div id="port">
-              <PortImage />
+              <PortImage portName={destination} />
             </div>
 
             <Label for="destinationSelect">Select Destination</Label>
@@ -194,19 +195,24 @@ const Home = () => {
 
         <Row>
           <Col md={5}>
-            <Button color="primary">Save Trip</Button>
+            <SaveTripButton tripId={tripId} />
           </Col>
           <Col md={6}></Col>
           <Col md={1} className="text-right">
             <Button
               color="primary"
               onClick={() => {
-                if ((origin, destination === '')) {
-                  alert('Please select a port before proceeding')
-                } else if (!departureDate) {
+                if (hasNonRoundSeconds(departureDate)) {
                   alert('Please select a departure date before proceeding')
                 } else if (trip === 'Round Trip' && !returnDate) {
                   alert('Please select an return date before proceeding')
+                } else if (
+                  trip === 'Round Trip' &&
+                  hasNonRoundSeconds(returnDate)
+                ) {
+                  alert('Please select an return date before proceeding')
+                } else if ((origin, destination === '')) {
+                  alert('Please select a port before proceeding')
                 } else {
                   handleNextButtonClick()
                   setPage('seatBooking')
@@ -220,7 +226,6 @@ const Home = () => {
       </div>
     )
   } else if (page === 'seatBooking') {
-    console.log('ticketPurchase:', ticketPurchase)
     return (
       <SeatBooking
         goToHome={goToHome}

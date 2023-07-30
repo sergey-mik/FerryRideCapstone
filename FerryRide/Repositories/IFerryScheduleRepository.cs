@@ -8,5 +8,4 @@ namespace FerryRide.Repositories
         List<FerrySchedule> GetFerrySchedules();
         FerrySchedule CreateFerrySchedule(FerrySchedule newSchedule);
     }
-
 }

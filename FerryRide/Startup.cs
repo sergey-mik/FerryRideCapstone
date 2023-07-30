@@ -28,6 +28,7 @@ namespace FerryRide
             services.AddTransient<ITicketPurchaseRepository, TicketPurchaseRepository>();
             services.AddTransient<ICommentRepository, CommentRepository>();
             services.AddTransient<IProfileRepository, ProfileRepository>();
+            services.AddTransient<ISavedFerryDepartureRepository, SavedFerryDepartureRepository>();
 
             var firebaseProjectId = Configuration.GetValue<string>("FirebaseProjectId");
             var googleTokenUrl = $"https://securetoken.google.com/{firebaseProjectId}";

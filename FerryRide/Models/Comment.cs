@@ -10,5 +10,8 @@ namespace FerryRide.Models
         public string Content { get; set; }
         public DateTime CreateDateTime { get; set; }
         public string AuthorName { get; set; }
+        public int FerryScheduleId { get; set; }
+        public string DeparturePortName { get; set; }
+        public string ArrivalPortName { get; set; }
     }
 }

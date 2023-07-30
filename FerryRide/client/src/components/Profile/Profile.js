@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardHeader,
-  CardBody,
-  ListGroup,
-  ListGroupItem,
-} from 'reactstrap'
+import { Container, Row, Col, Card, CardHeader, CardBody, ListGroup, ListGroupItem } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import { getAllTrips } from '../../modules/profileManager'
+import { getSavedSchedules } from '../../modules/savedTripManager'
 
 const ProfilePage = ({ userProfileId }) => {
   const [pastTrips, setPastTrips] = useState([])
   const [upcomingTrips, setUpcomingTrips] = useState([])
+  const [savedSchedules, setSavedSchedules] = useState([])
+
 
   useEffect(() => {
     getAllTrips(userProfileId).then((trips) => {
@@ -32,6 +26,15 @@ const ProfilePage = ({ userProfileId }) => {
       )
     })
   }, [userProfileId])
+  
+  useEffect(() => {
+    getAllTrips(userProfileId).then((trips) => {
+    })
+    getSavedSchedules().then((schedules) => {
+      setSavedSchedules(schedules)
+    })
+  }, [userProfileId])
+
 
   return (
     <Container style={{ marginTop: '50px' }}>
@@ -89,6 +92,22 @@ const ProfilePage = ({ userProfileId }) => {
                   return (
                     <ListGroupItem key={trip.id}>
                       {trip.origin} - {trip.destination}: {readableDateTime}
+                    </ListGroupItem>
+                  )
+                })}
+              </ListGroup>
+            </CardBody>
+          </Card>
+        </Col>
+        <Col>
+          <Card>
+            <CardHeader>Saved Trips</CardHeader>
+            <CardBody>
+              <ListGroup>
+                {savedSchedules.map((trip) => {
+                  return (
+                    <ListGroupItem key={trip.id}>
+                      {trip.origin} - {trip.destination}
                     </ListGroupItem>
                   )
                 })}

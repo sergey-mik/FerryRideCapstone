@@ -1,12 +1,17 @@
 body {
-  /* min-height: 100vh; */
-  background-color: #e9e4f5;
+  min-height: 100vh;
+  /* background-color: #b0daf7; */
+  /* background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%); */
+  background-image: linear-gradient(to top, #5ee7df 0%, #b490ca 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
   font-family: 'Helvetica Neue', Arial, 'Lucida Grande', sans-serif;
   /* font-size: 15px; */
   /* transform-style: preserve-3d; */
 }
 
 .btn {
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+  /* box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4); */
   /* margin-top: 150px; */
 }
+

@@ -23,19 +23,21 @@ export default function CommentsList() {
             month: '2-digit',
             day: '2-digit',
           })
-          const timeString = createDate.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true,
-          })
+          // const timeString = createDate.toLocaleTimeString('en-US', {
+          //   hour: '2-digit',
+          //   minute: '2-digit',
+          //   hour12: true,
+          // })
 
           return (
             <Card key={comment.id} className="m-4">
               <CardBody>
                 <CardTitle tag="h5">Subject: {comment.subject}</CardTitle>
                 <CardText>Content: {comment.content}</CardText>
+                <p>Departure Port: {comment.departurePortName}</p>
+                <p>Arrival Port: {comment.arrivalPortName}</p>
                 <p className="text-muted">
-                  Published on {dateString}, {timeString} by{' '}
+                  Published on {dateString} by{' '}
                   <strong>{comment.authorName}</strong>
                 </p>
               </CardBody>

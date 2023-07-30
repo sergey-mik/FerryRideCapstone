@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap'
-import './CommentForm.css'
 import { AddComment } from '../../modules/commentManager'
-import { useParams } from 'react-router-dom'
+import {  useNavigate, useParams } from 'react-router-dom'
+import './CommentForm.css'
 
 function CommentForm() {
   const [subject, setSubject] = useState('')
   const [content, setContent] = useState('')
   const { id } = useParams()
+  const navigate = useNavigate()
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -20,6 +21,7 @@ function CommentForm() {
     })
     setSubject('')
     setContent('')
+    navigate(`/comment/ticket/${id}`)
   }
 
   return (

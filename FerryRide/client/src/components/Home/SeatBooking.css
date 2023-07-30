@@ -18,7 +18,7 @@
   width: 80vw;
   margin: 25px auto;
   transition: transform 1s ease;
-  transform: rotateX(60deg) translateZ(800px) translateY(-50px);
+  transform: rotateX(60deg) translateZ(600px) translateY(-50px);
   transform-style: preserve-3d;
   transform-origin: center bottom;
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
