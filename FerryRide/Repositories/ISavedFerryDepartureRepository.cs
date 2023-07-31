@@ -7,5 +7,6 @@ namespace FerryRide.Repositories
     {
         SavedFerryDeparture SaveDeparture(SavedFerryDeparture newDeparture);
         List<SavedFerryDeparture> GetSavedDepartures();
+        void DeleteDeparture(int id);
     }
 }

@@ -111,14 +111,21 @@
 }
 
 /* -------------------------- */
-.legend,
-.total {
+.legend {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: row;
-  /* margin-top: 30px; */
+  margin-top: 30px;
   /* margin-bottom: 20px; */
+}
+
+.total {
+  margin-top: 20px;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
 }
 
 .legend-item {
@@ -157,4 +164,8 @@
   height: 500px;
 }
 
-
+/* ---------------- buttons ----------------*/
+.btn-container {
+  margin-top: -300px;
+  margin-left: 230px;
+}

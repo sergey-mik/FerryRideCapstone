@@ -9,16 +9,11 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import './Home.css'
 
-const toUTC = (date) => {
-  date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
-  return date
-}
-
 const Home = () => {
   const [trip, setTrip] = useState('Round Trip')
   const [tripId, setTripId] = useState(null)
-  const [departureDate, setDepartureDate] = useState(new Date())
-  const [returnDate, setReturnDate] = useState(new Date())
+  const [departureDate, setDepartureDate] = useState(null)
+  const [returnDate, setReturnDate] = useState(null)
   const [origin, setOrigin] = useState('')
   const [destination, setDestination] = useState('')
   const [schedules, setSchedules] = useState([])
@@ -35,17 +30,25 @@ const Home = () => {
     fetchSchedules()
   }, [])
 
-    const PortImage = ({ portName }) => {
-      let imageSrc = '/images/port1.jpg' // default image
-      if (portName === 'Port Angeles') {
-        imageSrc = '/images/port1.jpg'
-      } else if (portName === 'Victoria') {
-        imageSrc = '/images/port2.jpg'
-      }
-      return (
-        <img src={imageSrc} className="port" alt="port" draggable="false" />
-      )
+  const PortImage = ({ portName }) => {
+    let imageSrc = '/images/port1.jpg' // default image
+    if (portName === 'Port Angeles') {
+      imageSrc = '/images/port1.jpg'
+    } else if (portName === 'Victoria') {
+      imageSrc = '/images/port2.jpg'
     }
+    return <img src={imageSrc} className="port" alt="port" draggable="false" />
+  }
+
+  const ArrowImage = ({ trip }) => {
+    let imageSrc = '/images/round-arrow.png' // default image
+    if (trip === 'Round Trip') {
+      imageSrc = '/images/round-arrow.png'
+    } else if (trip === 'One Way') {
+      imageSrc = '/images/arrow.png'
+    }
+    return <img src={imageSrc} className="arrow" alt="arrow" draggable="false" />
+  }
 
   useEffect(() => {
     if (origin && destination) {
@@ -72,67 +75,70 @@ const Home = () => {
     const ticketPurchase = {
       UserProfileId: userProfileId,
       FerryScheduleId: ferryScheduleId,
-      DepartureDateTime: toUTC(departureDate).toISOString(),
     }
 
-    // Conditionally add the ReturnDateTime property to the ticketPurchase object if trip is 'Round Trip'
+    if (departureDate) {
+      ticketPurchase.DepartureDateTime = departureDate.toISOString()
+    }
+
     if (trip === 'Round Trip') {
-      ticketPurchase.ReturnDateTime = toUTC(returnDate).toISOString()
+      const returnDateTime = returnDate ? returnDate : departureDate
+      ticketPurchase.ReturnDateTime = returnDateTime.toISOString()
+    } else {
+      ticketPurchase.ReturnDateTime = departureDate.toISOString()
     }
 
     // Update the state with the Ticket Purchase data
     setTicketPurchase(ticketPurchase)
   }
 
-const hasNonRoundSeconds = (date) => {
-  return date.getSeconds() % 10 !== 0
-}
-  
   const goToHome = () => setPage('home')
 
   if (page === 'home') {
     return (
       <div className="container">
-        <h1>Book a Ferry</h1>
+        <h1 className="title">Book a Ferry</h1>
 
-        <Row>
-          <Col sm={10}>
-            <Row>
-              <Col>
-                <Label check>
-                  <Input
-                    type="radio"
-                    name="trip"
-                    checked={trip === 'Round Trip'}
-                    onChange={() => setTrip('Round Trip')}
-                  />{' '}
-                  Round Trip
-                </Label>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <Label check>
-                  <Input
-                    type="radio"
-                    name="trip"
-                    checked={trip === 'One Way'}
-                    onChange={() => setTrip('One Way')}
-                  />{' '}
-                  One Way
-                </Label>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+        {/* radio buttons */}
+        <div className="radio-row">
+          <Row>
+            <Col sm={{ size: 5, offset: 5 }}>
+              <Row>
+                <Col md={3}>
+                  <Label check>
+                    <Input
+                      type="radio"
+                      name="trip"
+                      checked={trip === 'Round Trip'}
+                      onChange={() => setTrip('Round Trip')}
+                    />{' '}
+                    Round Trip
+                  </Label>
+                </Col>
+                <Col md={3}>
+                  <Label check>
+                    <Input
+                      type="radio"
+                      name="trip"
+                      checked={trip === 'One Way'}
+                      onChange={() => setTrip('One Way')}
+                    />{' '}
+                    One Way
+                  </Label>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </div>
 
+        {/* date and time picker */}
         {trip === 'Round Trip' ? (
           <Row>
-            <Col md={6}>
+            <Col md={5}>
               <DateTimePicker date={departureDate} setDate={setDepartureDate} />
             </Col>
-            <Col md={2}></Col>
-            <Col md={4}>
+            <Col md={5}></Col>
+            <Col md={2}>
               <DateTimePicker date={returnDate} setDate={setReturnDate} />
             </Col>
           </Row>
@@ -144,13 +150,16 @@ const hasNonRoundSeconds = (date) => {
           </Row>
         )}
 
+        {/* port selection */}
         <Row>
-          <Col md={6}>
+          <Col md={4}>
             <div id="port">
               <PortImage portName={origin} />
             </div>
 
-            <Label for="originSelect">Select Origin</Label>
+            <Label for="originSelect" className="center-label">
+              Select Origin
+            </Label>
 
             <Input
               type="select"
@@ -168,14 +177,19 @@ const hasNonRoundSeconds = (date) => {
             </Input>
           </Col>
 
-          <Col md={2}></Col>
+          {/* Col component with the arrow image */}
+          <Col md={4}>
+            <ArrowImage trip={trip} />
+          </Col>
 
           <Col md={4}>
             <div id="port">
               <PortImage portName={destination} />
             </div>
 
-            <Label for="destinationSelect">Select Destination</Label>
+            <Label for="destinationSelect" className="center-label">
+              Select Destination
+            </Label>
             <Input
               type="select"
               name="select"
@@ -193,36 +207,33 @@ const hasNonRoundSeconds = (date) => {
           </Col>
         </Row>
 
-        <Row>
-          <Col md={5}>
-            <SaveTripButton tripId={tripId} />
-          </Col>
-          <Col md={6}></Col>
-          <Col md={1} className="text-right">
-            <Button
-              color="primary"
-              onClick={() => {
-                if (hasNonRoundSeconds(departureDate)) {
-                  alert('Please select a departure date before proceeding')
-                } else if (trip === 'Round Trip' && !returnDate) {
-                  alert('Please select an return date before proceeding')
-                } else if (
-                  trip === 'Round Trip' &&
-                  hasNonRoundSeconds(returnDate)
-                ) {
-                  alert('Please select an return date before proceeding')
-                } else if ((origin, destination === '')) {
-                  alert('Please select a port before proceeding')
-                } else {
-                  handleNextButtonClick()
-                  setPage('seatBooking')
-                }
-              }}
-            >
-              Next
-            </Button>
-          </Col>
-        </Row>
+        <div className="button-container">
+          <Row>
+            <Col md={5}>
+              <SaveTripButton tripId={tripId} />
+            </Col>
+            <Col md={6}></Col>
+            <Col md={1} className="align-right">
+              <Button
+                color="primary"
+                onClick={() => {
+                  if (!departureDate) {
+                    alert('Please select a departure date before proceeding')
+                  } else if (trip === 'Round Trip' && !returnDate) {
+                    alert('Please select a return date before proceeding')
+                  } else if ((origin, destination === '')) {
+                    alert('Please select a port before proceeding')
+                  } else {
+                    handleNextButtonClick()
+                    setPage('seatBooking')
+                  }
+                }}
+              >
+                Continue
+              </Button>
+            </Col>
+          </Row>
+        </div>
       </div>
     )
   } else if (page === 'seatBooking') {

@@ -1,0 +1,19 @@
+.card-content {
+    padding-left: 50px;
+}
+
+.ports-name {
+    font-weight: bold;
+}
+
+.text-date {
+    text-align: right;
+}
+
+.profile-title {
+    margin-top: 50px;
+    /* margin-left: 230px; */
+    font-weight: bold;
+    font-style: italic;
+    text-align: center;
+}

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Row, Col, Card, CardHeader, CardBody, ListGroup, ListGroupItem } from 'reactstrap'
+import { Container, Row, Button, Col, Card, CardHeader, CardBody, ListGroup, ListGroupItem } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import { getAllTrips } from '../../modules/profileManager'
-import { getSavedSchedules } from '../../modules/savedTripManager'
+import { getSavedSchedules, deleteSchedule } from '../../modules/savedTripManager'
 
 const ProfilePage = ({ userProfileId }) => {
   const [pastTrips, setPastTrips] = useState([])
@@ -38,6 +38,7 @@ const ProfilePage = ({ userProfileId }) => {
 
   return (
     <Container style={{ marginTop: '50px' }}>
+      <h1 className="profile-title">Profile Page</h1>
       <Row>
         <Col>
           <Card>
@@ -107,7 +108,34 @@ const ProfilePage = ({ userProfileId }) => {
                 {savedSchedules.map((trip) => {
                   return (
                     <ListGroupItem key={trip.id}>
-                      {trip.origin} - {trip.destination}
+                      <div className="d-flex justify-content-between">
+                        <div>
+                          {trip.origin} - {trip.destination}
+                        </div>
+                        <div>
+                          <Button
+                            color="danger"
+                            size="sm"
+                            onClick={() => {
+                              if (
+                                window.confirm(
+                                  'Are you sure you want to delete this saved trip?'
+                                )
+                              ) {
+                                deleteSchedule(trip.id).then(() => {
+                                  setSavedSchedules((prevSavedSchedules) =>
+                                    prevSavedSchedules.filter(
+                                      (schedule) => schedule.id !== trip.id
+                                    )
+                                  )
+                                })
+                              }
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
                     </ListGroupItem>
                   )
                 })}

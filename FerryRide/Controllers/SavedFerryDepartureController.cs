@@ -29,5 +29,12 @@ namespace FerryRide.Controllers
             return Ok(schedules);
         }
 
+        [HttpDelete("{id}")]
+        public IActionResult DeleteDeparture(int id)
+        {
+            _savedFerryDepartureRepository.DeleteDeparture(id);
+            return NoContent();
+        }
+
     }
 }

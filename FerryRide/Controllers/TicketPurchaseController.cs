@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FerryRide.Models;
+using System;
 
 namespace FerryRide.Controllers
 {
@@ -28,8 +29,17 @@ namespace FerryRide.Controllers
         [HttpPost]
         public IActionResult PostTicketPurchase([FromBody] TicketPurchase newReservation)
         {
+            // Convert DepartureDateTime from UTC to server's local time
+            DateTime departureDateTimeUtc = DateTime.SpecifyKind(newReservation.DepartureDateTime, DateTimeKind.Utc);
+            DateTime departureDateTimeLocal = departureDateTimeUtc.ToLocalTime();
+
+            // Update newReservation with the local time
+            newReservation.DepartureDateTime = departureDateTimeLocal;
+
+            // Pass the updated newReservation to the repository to create the ticket purchase
             var createdReservation = _ticketPurchaseRepository.CreateTicketPurchase(newReservation);
             return Ok(createdReservation);
         }
+
     }
 }

@@ -1,10 +1,12 @@
-#originSelect,
+#originSelect {
+  width: 100%;
+}
 #destinationSelect {
-  width: 50%;
+  width: 100%;
 }
 
-label[for="originSelect"],
-label[for="destinationSelect"] {
+label[for='originSelect'],
+label[for='destinationSelect'] {
   font-weight: bold;
   font-size: 20px;
   margin-top: 10px;
@@ -15,6 +17,38 @@ label[for="destinationSelect"] {
   height: 215px;
 }
 
+.arrow {
+  margin-left: 100px;
+  margin-top: 50px;
+  width: 215px;
+  height: 115px;
+}
+
 .align-right {
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.button-container {
+  margin-top: 150px;
+  /* padding: 10px; */
+}
+
+.radio-row {
+  margin-top: 30px;
+  justify-content: center;
+}
+
+.container {
+  margin-top: 50px;
+}
+
+.title {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.center-label {
+  display: block;
+  text-align: center;
 }

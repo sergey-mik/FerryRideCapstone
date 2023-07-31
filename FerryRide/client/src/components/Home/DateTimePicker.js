@@ -7,10 +7,10 @@ const DateTimePicker = ({ date, setDate }) => {
   const [startDate, setStartDate] = useState(null)
 
   const handleDateChange = (date) => {
-    if (date.getHours() === 0 && date.getMinutes() === 0) {
-      date.setHours(minTime.getHours())
-      date.setMinutes(minTime.getMinutes())
-    }
+    // if (date.getHours() === 0 && date.getMinutes() === 0) {
+    //   date.setHours(minTime.getHours())
+    //   date.setMinutes(minTime.getMinutes())
+    // }
     setStartDate(date)
     setDate(date)
   }

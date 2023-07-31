@@ -22,10 +22,11 @@ function CommentForm() {
     setSubject('')
     setContent('')
     navigate(`/comment/ticket/${id}`)
+    window.location.reload()
   }
 
   return (
-    <div className="commentContainer">
+    <div className="commentContainer mt-5">
       <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="subject">Subject:</Label>
@@ -43,6 +44,7 @@ function CommentForm() {
             id="content"
             value={content}
             onChange={(event) => setContent(event.target.value)}
+            className="wide-textarea"
           />
         </FormGroup>
         <Button type="submit">Post Comment</Button>

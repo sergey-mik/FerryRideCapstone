@@ -63,9 +63,9 @@ const SeatBooking = ({
     )
   }
 
-  const addFiveHours = (date) => {
-    return new Date(date.getTime() + 5 * 60 * 60 * 1000)
-  }
+  // const addFiveHours = (date) => {
+  //   return new Date(date.getTime() + 5 * 60 * 60 * 1000)
+  // }
 
   useEffect(() => {
     console.log(tripId)
@@ -97,6 +97,18 @@ const SeatBooking = ({
       total += 25
     })
     return total
+  }
+
+  const handleContinue = () => {
+    if (selectedSeats.length === 0) {
+      alert('Please select a seat before continuing')
+    } else {
+      if (returnDate && !returnTripClicked) {
+        handleReturnTripClick()
+      } else {
+        handlePurchaseClick()
+      }
+    }
   }
 
   const handleReturnTripClick = () => {
@@ -197,15 +209,11 @@ const SeatBooking = ({
       <div className="seat-booking-container">
         <Card className="seat-booking-card">
           <CardBody>
-            <CardTitle tag="h5">Trip Information</CardTitle>
+            <CardTitle tag="h5">Trip Information</CardTitle> <hr></hr>
             <CardText>Trip: {trip.toString()}</CardText>
-            <CardText>
-              Departure Date: {formatDate(addFiveHours(departureDate))}
-            </CardText>
+            <CardText>Departure Date: {formatDate(departureDate)}</CardText>
             {returnDate ? (
-              <CardText>
-                Return Date: {formatDate(addFiveHours(returnDate))}
-              </CardText>
+              <CardText>Return Date: {formatDate(returnDate)}</CardText>
             ) : null}
             <CardText>Origin: {origin.toString()}</CardText>
             <CardText>Destination: {destination.toString()}</CardText>
@@ -232,36 +240,6 @@ const SeatBooking = ({
         </div>
       </div>
 
-      <Row>
-        <Col md={2}></Col>
-        <Col md={4}>
-          <Button color="primary" onClick={goToHome}>
-            Go Back
-          </Button>
-        </Col>
-        <Col md={3}></Col>
-        <Col md={3}>
-          {returnDate && !returnTripClicked ? (
-            <Button
-              className="arrow-button"
-              color="primary"
-              onClick={handleReturnTripClick}
-            >
-              Return Trip
-            </Button>
-          ) : (
-            <Button
-              className="arrow-button"
-              color="primary"
-              onClick={handlePurchaseClick}
-            >
-              Continue
-            </Button>
-          )}
-        </Col>
-        <Col md={2}></Col>
-      </Row>
-
       <SeatPicker
         rows={rows}
         selectedSeats={selectedSeats}
@@ -279,8 +257,8 @@ const SeatBooking = ({
             <p>
               Departure Date:{' '}
               {isOnwardTrip || !returnDate
-                ? formatDate(addFiveHours(departureDate))
-                : formatDate(addFiveHours(returnDate))}
+                ? formatDate(departureDate)
+                : formatDate(returnDate)}
             </p>
 
             <p>
@@ -302,13 +280,43 @@ const SeatBooking = ({
 
           <ModalFooter>
             <Button color="primary" onClick={handleConfirmPurchaseClick}>
-              {isOnwardTrip ? 'Confirm Onward' : 'Confirm Return'}
+              {isOnwardTrip ? 'Confirm' : 'Confirm'}
             </Button>{' '}
             <Button color="secondary" onClick={handlePurchaseClick}>
               Cancel
             </Button>
           </ModalFooter>
         </Modal>
+      </div>
+
+      <div className="btn-container">
+        <Row>
+          <Col md={5}>
+            <Button color="primary" onClick={goToHome}>
+              Go Back
+            </Button>
+          </Col>
+          <Col md={4}></Col>
+          <Col md={1}>
+            {returnDate && !returnTripClicked ? (
+              <Button
+                className="arrow-button"
+                color="primary"
+                onClick={handleContinue}
+              >
+                Return Trip
+              </Button>
+            ) : (
+              <Button
+                className="arrow-button"
+                color="primary"
+                onClick={handleContinue}
+              >
+                Continue
+              </Button>
+            )}
+          </Col>
+        </Row>
       </div>
     </div>
   )

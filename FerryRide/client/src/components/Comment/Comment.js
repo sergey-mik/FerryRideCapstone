@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Card, CardBody, CardTitle, CardText, Button, Input, Modal, ModalHeader, ModalBody, } from 'reactstrap'
+import { Card, CardBody, CardTitle, CardText, Button, Input, Modal, ModalHeader, ModalBody, Row, Col} from 'reactstrap'
 import { updateComment, deleteComment } from '../../modules/commentManager'
 import './Comment.css'
 
@@ -59,27 +59,31 @@ export default function Comment({ comment, currentUserId, onDelete }) {
 
   return (
     <div className="center">
-      <Card className="m-4">
-        <CardBody>
-          <div>
-            <CardTitle tag="h5">Subject: {currentComment.subject}</CardTitle>
-            <CardText>Content: {currentComment.content}</CardText>
-            <p className="text-muted">
-              Published on {dateString}
-            </p>
-            {currentUserId === currentComment.authorId && (
-              <>
-                <Button color="primary" onClick={handleEdit}>
-                  Edit
-                </Button>{' '}
-                <Button color="danger" onClick={handleDelete}>
-                  Delete
-                </Button>
-              </>
-            )}
-          </div>
-        </CardBody>
-      </Card>
+      <Row>
+        <Col md={6} className="mx-auto">
+          <Card className="m-4">
+            <CardBody>
+              <div>
+                <CardTitle tag="h5">
+                  Subject: {currentComment.subject}
+                </CardTitle> <hr />
+                <CardText>Content: {currentComment.content}</CardText>
+                <p className="text-muted">Published on {dateString}</p>
+                {currentUserId === currentComment.authorId && (
+                  <>
+                    <Button color="primary" onClick={handleEdit}>
+                      Edit
+                    </Button>{' '}
+                    <Button color="danger" onClick={handleDelete}>
+                      Delete
+                    </Button>
+                  </>
+                )}
+              </div>
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
       <Modal isOpen={isEditing} toggle={() => setIsEditing(false)}>
         <ModalHeader toggle={() => setIsEditing(false)}>
           Edit Comment
