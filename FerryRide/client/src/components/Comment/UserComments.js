@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Comment from './Comment'
 import { getCommentsByTicketPurchaseId } from '../../modules/commentManager'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Alert, Button, Card, CardBody, CardTitle, Col, Row } from 'reactstrap'
+import { Button, Card, CardBody, CardTitle, Col, Row } from 'reactstrap'
 
 export default function UserComments() {
   const [comments, setComments] = useState([])

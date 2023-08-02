@@ -32,10 +32,14 @@ const Home = () => {
 
   const PortImage = ({ portName }) => {
     let imageSrc = '/images/port1.jpg' // default image
-    if (portName === 'Port Angeles') {
+    if (portName === 'Edgewater Landing') {
       imageSrc = '/images/port1.jpg'
-    } else if (portName === 'Victoria') {
+    } else if (portName === 'Port Imperial') {
       imageSrc = '/images/port2.jpg'
+    } else if (portName === 'Lincoln Harbor') {
+      imageSrc = '/images/port3.jpg'
+    } else if (portName === 'Paulus Hook') {
+      imageSrc = '/images/port4.jpg'
     }
     return <img src={imageSrc} className="port" alt="port" draggable="false" />
   }
@@ -47,8 +51,20 @@ const Home = () => {
     } else if (trip === 'One Way') {
       imageSrc = '/images/arrow.png'
     }
-    return <img src={imageSrc} className="arrow" alt="arrow" draggable="false" />
+    return (
+      <img src={imageSrc} className="arrow" alt="arrow" draggable="false" />
+    )
   }
+
+  // A new array of unique origin port names
+  const uniqueOrigins = Array.from(
+    new Set(schedules.map((schedule) => schedule.origin))
+  )
+
+  // A new array of unique destination port names
+  const uniqueDestinations = Array.from(
+    new Set(schedules.map((schedule) => schedule.destination))
+  )
 
   useEffect(() => {
     if (origin && destination) {
@@ -169,9 +185,9 @@ const Home = () => {
               onChange={(e) => setOrigin(e.target.value)}
             >
               <option value="">Select</option>
-              {schedules.map((schedule) => (
-                <option key={schedule.id} value={schedule.origin}>
-                  {schedule.origin}
+              {uniqueOrigins.map((origin, index) => (
+                <option key={index} value={origin}>
+                  {origin}
                 </option>
               ))}
             </Input>
@@ -198,9 +214,9 @@ const Home = () => {
               onChange={(e) => setDestination(e.target.value)}
             >
               <option value="">Select</option>
-              {schedules.map((schedule) => (
-                <option key={schedule.id} value={schedule.destination}>
-                  {schedule.destination}
+              {uniqueDestinations.map((destination, index) => (
+                <option key={index} value={destination}>
+                  {destination}
                 </option>
               ))}
             </Input>
@@ -210,7 +226,11 @@ const Home = () => {
         <div className="button-container">
           <Row>
             <Col md={5}>
-              <SaveTripButton tripId={tripId} />
+              <SaveTripButton
+                tripId={tripId}
+                origin={origin}
+                destination={destination}
+              />
             </Col>
             <Col md={6}></Col>
             <Col md={1} className="align-right">
@@ -221,8 +241,10 @@ const Home = () => {
                     alert('Please select a departure date before proceeding')
                   } else if (trip === 'Round Trip' && !returnDate) {
                     alert('Please select a return date before proceeding')
-                  } else if ((origin, destination === '')) {
-                    alert('Please select a port before proceeding')
+                  } else if (!origin || !destination) {
+                    alert('Please choose correct destination')
+                  } else if (!tripId) {
+                    alert('Please make sure to select a valid destination')
                   } else {
                     handleNextButtonClick()
                     setPage('seatBooking')

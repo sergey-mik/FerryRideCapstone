@@ -13,7 +13,15 @@ SET IDENTITY_INSERT [UserProfile] OFF
 
 INSERT INTO FerrySchedule (Origin, Destination, Duration)
 VALUES 
-('Port Angeles', 'Victoria', 90),
-('Victoria', 'Port Angeles', 90),
-('Port Boston', 'Bermuda', 90),
-('Bermuda', 'Port Boston', 90);
+('Edgewater Landing', 'Port Imperial', 90),
+('Port Imperial', 'Edgewater Landing', 90),
+('Port Imperial', 'Lincoln Harbor', 90),
+('Lincoln Harbor', 'Port Imperial', 90),
+('Port Imperial', 'Paulus Hook', 90),
+('Paulus Hook', 'Port Imperial', 90),
+('Lincoln Harbor', 'Edgewater Landing', 90),
+('Edgewater Landing', 'Lincoln Harbor', 90),
+('Lincoln Harbor', 'Paulus Hook', 90),
+('Paulus Hook', 'Lincoln Harbor', 90),
+('Edgewater Landing', 'Paulus Hook', 90),
+('Paulus Hook', 'Edgewater Landing', 90);

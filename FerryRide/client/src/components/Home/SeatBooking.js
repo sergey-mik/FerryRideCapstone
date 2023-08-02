@@ -63,10 +63,6 @@ const SeatBooking = ({
     )
   }
 
-  // const addFiveHours = (date) => {
-  //   return new Date(date.getTime() + 5 * 60 * 60 * 1000)
-  // }
-
   useEffect(() => {
     console.log(tripId)
     getAllSeatReservations(tripId).then((data) => {
@@ -143,6 +139,13 @@ const SeatBooking = ({
   const handlePurchaseClick = () => {
     // Update the DepartureDateTime property with the ReturnDateTime value
     ticketPurchase.DepartureDateTime = ticketPurchase.ReturnDateTime
+
+      // If it is odd, increase its value by one, and if it is even, decrease its value by one.
+      ticketPurchase.FerryScheduleId =
+        ticketPurchase.FerryScheduleId % 2 === 0
+          ? ticketPurchase.FerryScheduleId - 1
+          : ticketPurchase.FerryScheduleId + 1
+
     // Post the ticketPurchase data to the server
     addTicketPurchase(ticketPurchase)
       .then((response) => response.json())
@@ -166,8 +169,9 @@ const SeatBooking = ({
       .catch((error) => {
         // Handle error while adding ticket purchase
       })
-    setIsOnwardTrip(false)
+      setIsOnwardTrip(false)
   }
+
 
   const handleConfirmPurchaseClick = () => {
     // If tripId is an odd number, increase its value by one
@@ -248,12 +252,11 @@ const SeatBooking = ({
       />
 
       <div className="seat-booking-container">
-        <Modal isOpen={modal} toggle={handlePurchaseClick}>
+        <Modal isOpen={modal} toggle={handlePurchaseClick} backdrop="static">
           <ModalHeader toggle={handlePurchaseClick}>
             Trip Information
           </ModalHeader>
           <ModalBody>
-            {/* <p> Trip: {isOnwardTrip ? 'Onward' : 'Return'} </p> */}
             <p>
               Departure Date:{' '}
               {isOnwardTrip || !returnDate
@@ -280,11 +283,8 @@ const SeatBooking = ({
 
           <ModalFooter>
             <Button color="primary" onClick={handleConfirmPurchaseClick}>
-              {isOnwardTrip ? 'Confirm' : 'Confirm'}
+              Confirm
             </Button>{' '}
-            <Button color="secondary" onClick={handlePurchaseClick}>
-              Cancel
-            </Button>
           </ModalFooter>
         </Modal>
       </div>
@@ -304,7 +304,7 @@ const SeatBooking = ({
                 color="primary"
                 onClick={handleContinue}
               >
-                Return Trip
+                ReturnTrip
               </Button>
             ) : (
               <Button

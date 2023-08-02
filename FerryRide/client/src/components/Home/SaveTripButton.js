@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom'
 import firebase from 'firebase/app'
 import 'firebase/auth'
 
-const SaveTripButton = ({ tripId }) => {
+const SaveTripButton = ({ tripId, origin, destination }) => {
   const [userProfileId, setUserProfileId] = useState(null)
-    const navigate = useNavigate()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const getUserProfileId = async () => {
@@ -19,24 +19,30 @@ const SaveTripButton = ({ tripId }) => {
   }, [])
 
   const handleSaveTrip = () => {
-    // Gather data from form
-    const newSchedule = {
-      ferryScheduleId: tripId,
-      userProfileId: userProfileId,
-    }
+    if (!origin || !destination) {
+      alert('Please select schedule')
+    } else if (!tripId) {
+      alert('Please make sure to select a valid schedule')
+    } else {
+      // Gather data from form
+      const newSchedule = {
+        ferryScheduleId: tripId,
+        userProfileId: userProfileId,
+      }
 
-    // Save schedule using scheduleManager module
-    addSchedule(newSchedule)
-      .then(() => {
-        // Handle successful save
-        console.log('Saved schedule:', newSchedule)
-        // Navigate to Profile component
-        navigate('/profile')
-      })
-      .catch((error) => {
-        // Handle error
-        console.error('Error saving schedule:', error)
-      })
+      // Save schedule using scheduleManager module
+      addSchedule(newSchedule)
+        .then(() => {
+          // Handle successful save
+          console.log('Saved schedule:', newSchedule)
+          // Navigate to Profile component
+          navigate('/profile')
+        })
+        .catch((error) => {
+          // Handle error
+          console.error('Error saving schedule:', error)
+        })
+    }
   }
 
   return React.createElement(

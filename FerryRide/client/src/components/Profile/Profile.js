@@ -38,7 +38,7 @@ const ProfilePage = ({ userProfileId }) => {
 
   return (
     <Container style={{ marginTop: '50px' }}>
-      <h1 className="profile-title">Profile Page</h1>
+      <h1>Profile Page</h1>
       <Row>
         <Col>
           <Card>
